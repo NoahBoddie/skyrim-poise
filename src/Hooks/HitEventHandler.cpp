@@ -30,7 +30,7 @@ float HitEventHandler::GetUnarmedDamage(RE::Actor* a_actor)
 {
 	auto settings = Settings::GetSingleton();
 
-	auto unarmedDamage = std::lerp(static_cast<float>(settings->JSONSettings["Weapons"]["Damage"]["HandToHandMelee"]), a_actor->GetActorValue(RE::ActorValue::kUnarmedDamage), settings->Damage.UnarmedSkillContribution);
+	auto unarmedDamage = std::lerp(static_cast<float>(settings->JSONSettings["Weapons"]["Damage"]["HandToHandMelee"]), a_actor->AsActorValueOwner()->GetActorValue(RE::ActorValue::kUnarmedDamage), settings->Damage.UnarmedSkillContribution);
 	auto gauntlet = a_actor->GetWornArmor(RE::BGSBipedObjectForm::BipedObjectSlot::kHands);
 
 	return gauntlet ? std::lerp(unarmedDamage, unarmedDamage + gauntlet->weight, settings->Damage.GauntletWeightContribution) : unarmedDamage;
@@ -61,9 +61,9 @@ float HitEventHandler::RecalculateStagger(RE::Actor* target, RE::Actor* aggresso
 
 	auto sourceRef = hitData->sourceRef.get().get();
 	if (sourceRef) {
-		if (sourceRef->AsProjectile() && sourceRef->AsProjectile()->ammoSource && sourceRef->AsProjectile()->weaponSource) {
-			stagger = GetWeaponDamage(sourceRef->AsProjectile()->weaponSource) * settings->Damage.BowMult;
-			stagger *= 1.0f + aggressor->GetActorValue(RE::ActorValue::kBowStaggerBonus);
+		if (sourceRef->AsProjectile() && sourceRef->AsProjectile()->GetProjectileRuntimeData().ammoSource && sourceRef->AsProjectile()->GetProjectileRuntimeData().weaponSource) {
+			stagger = GetWeaponDamage(sourceRef->AsProjectile()->GetProjectileRuntimeData().weaponSource) * settings->Damage.BowMult;
+			stagger *= 1.0f + aggressor->AsActorValueOwner()->GetActorValue(RE::ActorValue::kBowStaggerBonus);
 		} else
 			logger::debug("Missed attack with sourceRef");
 	} else if (hitData->weapon) {
@@ -104,7 +104,7 @@ float HitEventHandler::RecalculateStagger(RE::Actor* target, RE::Actor* aggresso
 	stagger *= baseMult;
 	if (hitData->totalDamage && hitData->physicalDamage)
 	stagger *= hitData->totalDamage / hitData->physicalDamage;
-	stagger = stagger * min(1 - (target->armorRating * 0.12f + target->armorBaseFactorSum) / 100.0f, 0.8f); 
+	stagger = stagger * min(1 - (target->GetActorRuntimeData().armorRating * 0.12f + target->GetActorRuntimeData().armorBaseFactorSum) / 100.0f, 0.8f); 
 
 	return stagger;
 }

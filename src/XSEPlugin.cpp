@@ -78,7 +78,7 @@ void InitializeLog()
 		util::report_and_fail("Failed to find standard logging directory"sv);
 	}
 
-	*path /= fmt::format("{}.log"sv, Plugin::NAME);
+	*path /= fmt::format(FMT_STRING("{}.log"), Plugin::NAME);
 	auto       sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(path->string(), true);
 #endif
 
@@ -118,6 +118,8 @@ EXTERN_C [[maybe_unused]] __declspec(dllexport) constinit auto SKSEPlugin_Versio
 	v.PluginName("PluginName");
 	v.PluginVersion({ 1, 0, 0, 0 });
 	v.UsesAddressLibrary(true);
+	v.CompatibleVersions({ SKSE::RUNTIME_SSE_LATEST_AE, SKSE::RUNTIME_LATEST_VR });
+	v.HasNoStructUse(true);
 	return v;
 }();
 

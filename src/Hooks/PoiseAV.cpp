@@ -7,12 +7,12 @@
 
 bool PoiseAV::CanDamageActor(RE::Actor* a_actor)
 {
-	if (a_actor && a_actor->currentProcess && !a_actor->IsChild()) {
+	if (a_actor && a_actor->GetActorRuntimeData().currentProcess && !a_actor->IsChild()) {
 		switch (Settings::GetSingleton()->Modes.StaggerMode) {
 		case 0:
 			return true;
 		case 1:
-			return !a_actor->actorState2.staggered;
+			return !a_actor->AsActorState()->actorState2.staggered;
 		}
 	}
 	return false;
@@ -27,7 +27,7 @@ float PoiseAV::GetBaseActorValue(RE::Actor* a_actor)
 	if (!editorID.empty() && (settings->JSONSettings["Races"][editorID] != nullptr))
 		health = (float)settings->JSONSettings["Races"][editorID];
 	else
-		health = a_actor->GetBaseActorValue(RE::ActorValue::kMass);
+		health = a_actor->AsActorValueOwner()->GetBaseActorValue(RE::ActorValue::kMass);
 
 	health *= settings->Health.BaseMult;
 	health += ActorCache::GetSingleton()->GetOrCreateCachedWeight(a_actor) * Settings::GetSingleton()->Health.ArmorMult;
@@ -83,7 +83,7 @@ void PoiseAV::DamageAndCheckPoise(RE::Actor* a_target, RE::Actor* a_aggressor, f
 
 void PoiseAV::Update(RE::Actor* a_actor, [[maybe_unused]] float a_delta)
 {
-	if (a_actor->currentProcess && a_actor->currentProcess->InHighProcess() && a_actor->Is3DLoaded()) {
+	if (a_actor->GetActorRuntimeData().currentProcess && a_actor->GetActorRuntimeData().currentProcess->InHighProcess() && a_actor->Is3DLoaded()) {
 		auto settings = Settings::GetSingleton();
 
 		if (PoiseAVHUD::trueHUDInterface && settings->TrueHUD.SpecialBar) {
@@ -96,7 +96,7 @@ void PoiseAV::Update(RE::Actor* a_actor, [[maybe_unused]] float a_delta)
 		auto                               avManager = AVManager::GetSingleton();
 		std::lock_guard<std::shared_mutex> lk(avManager->mtx);
 		if (avManager->GetActorValue(g_avName, a_actor) == 0.0f) {
-			if (a_actor->actorState2.staggered) {
+			if (a_actor->AsActorState()->actorState2.staggered) {
 				avManager->RestoreActorValue(g_avName, a_actor, FLT_MAX);
 				if (PoiseAVHUD::trueHUDInterface && settings->TrueHUD.SpecialBar) {
 					PoiseAVHUD::trueHUDInterface->FlashActorSpecialBar(SKSE::GetPluginHandle(), a_actor->GetHandle(), true);
@@ -122,7 +122,7 @@ void PoiseAV::GarbageCollection()
 		try {
 			if (auto form = RE::TESForm::LookupByID(static_cast<RE::FormID>(std::stoul(sformID)))) {
 				if (auto actor = RE::TESForm::LookupByID(static_cast<RE::FormID>(std::stoul(sformID)))->As<RE::Actor>()) {
-					if (actor->currentProcess && actor->currentProcess->InHighProcess() && actor->Is3DLoaded())
+					if (actor->GetActorRuntimeData().currentProcess && actor->GetActorRuntimeData().currentProcess->InHighProcess() && actor->Is3DLoaded())
 						continue;
 				}
 			}
