@@ -39,6 +39,7 @@ public:
 	float fDiffMultHPToPCH;
 	float fDiffMultHPToPCVH;
 	float fDiffMultHPToPCL;
+	
 
 	struct
 	{
@@ -47,25 +48,26 @@ public:
 
 	struct
 	{
-		float BaseMult{ 20 };
-		float ArmorMult{ 0.5 };
-		float RegenRate{ 0.333f };
+		float BaseMult{ 50 };
+		float ArmorMult{ 0.25 };
+		float RegenRate{ 0.050f };
 	} Health;
 
 	struct
 	{
-		float BashMult{ 2 };
-		float BowMult{ 1 };
-		float CreatureMult{ 1 };
-		float MeleeMult{ 1 };
-		float UnarmedMult{ 1 };
+		float BashMult{ 1.5 };
+		float BowMult{ 1.0 };
+		float CreatureMult{ 2.0 };
+		float MeleeMult{ 1.0 };
+		float UnarmedMult{ 2.0 };
 
-		float ToPCMult{ 1.5 };
-		float ToNPCMult{ 1 };
+		float ToPCMult{ 1.0 };
+		float ToNPCMult{ 1.0 };
 
-		float WeightContribution{ 0.5 };
-		float GauntletWeightContribution{ 0.5 };
-		float UnarmedSkillContribution{ 0.5 };
+		float WeightContribution{ 2.0 };
+		float GauntletWeightContribution{ 1.0 };
+		float UnarmedSkillContribution{ 0.2 };
+
 	} Damage;
 
 	struct

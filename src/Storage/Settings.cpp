@@ -54,6 +54,7 @@ void Settings::LoadGameSettings()
 	fDiffMultHPToPCH = gameSettingCollection->GetSetting("fDiffMultHPToPCH")->GetFloat();
 	fDiffMultHPToPCVH = gameSettingCollection->GetSetting("fDiffMultHPToPCVH")->GetFloat();
 	fDiffMultHPToPCL = gameSettingCollection->GetSetting("fDiffMultHPToPCL")->GetFloat();
+	
 }
 
 void Settings::LoadINI(const wchar_t* a_path)
@@ -61,6 +62,15 @@ void Settings::LoadINI(const wchar_t* a_path)
 	CSimpleIniA ini;
 	ini.SetUnicode();
 	ini.LoadFile(a_path);
+	const auto get_value = [&]<class T>(T& a_value, const char* a_section, const char* a_key, const char* a_comment) {
+		if constexpr (std::is_same_v<bool, T>) {
+			a_value = ini.GetBoolValue(a_section, a_key, a_value);
+			ini.SetBoolValue(a_section, a_key, a_value, a_comment);
+		} else {
+			a_value = static_cast<float>(ini.GetDoubleValue(a_section, a_key, a_value));
+			ini.SetDoubleValue(a_section, a_key, a_value, a_comment);
+		}
+	};
 
 	Modes.StaggerMode = ini.GetLongValue("Modes", "StaggerMode", Modes.StaggerMode);
 
@@ -82,7 +92,30 @@ void Settings::LoadINI(const wchar_t* a_path)
 	Damage.GauntletWeightContribution = static_cast<float>(ini.GetDoubleValue("Damage", "GauntletWeightContribution", Damage.GauntletWeightContribution));
 	Damage.UnarmedSkillContribution = static_cast<float>(ini.GetDoubleValue("Damage", "UnarmedSkillContribution", Damage.UnarmedSkillContribution));
 
+
 	TrueHUD.SpecialBar = ini.GetBoolValue("TrueHUD", "SpecialBar", TrueHUD.SpecialBar) && (!GetModuleHandleA("valhallaCombat.dll") || ini.GetBoolValue("TrueHUD", "IgnoreValhallaCombat", false));
+
+	get_value(Health.BaseMult, "Health Settings", "Base Mult", ";Base Health Multiplier");
+	get_value(Health.ArmorMult, "Health Settings", "Armor Mult", ";Armor Multiplier");
+	get_value(Health.RegenRate, "Health Settings", "Regen Rate", ";Poise regeneration rate");
+
+	get_value(Damage.BashMult, "Damage Settings", "Bash Mult", ";Multiplier for Bash Attacks");
+	get_value(Damage.BowMult, "Damage Settings", "Bow Mult", ";Poise Damage Multiplier for Bow attacks");
+	get_value(Damage.CreatureMult, "Damage Settings", "Creature Mult", ";Poise damage from creatures");
+	get_value(Damage.MeleeMult, "Damage Settings", "Melee Mult", ";Poise damage multiplier from melee attacks");
+	
+	get_value(Damage.ToPCMult, "General Damage Settings", "Player Multiplier", ";Poise damage multiplier for the Player");
+	get_value(Damage.ToNPCMult, "General Damage Settings", "NPC Multiplier", ";Poise damage multiplier to NPCs");
+	get_value(Damage.WeightContribution, "General Damage Settings", "Weight Contribution", ";How much influence weight has to your poise damage");
+
+	get_value(Damage.UnarmedMult, "Unarmed Damage Settings", "Unarmed Damage Mult", ";Poise damage from unarmed attacks");
+	get_value(Damage.GauntletWeightContribution, "Unarmed Damage Settings", "Gauntlet Weight Contribution", ";How much influence the gaunlet weight has to poise damage");
+	get_value(Damage.UnarmedSkillContribution, "Unarmed Damage Settings", "Unarmed Skill Contribution", ";How much influence the Unarmed skill has to poise damage");
+
+	get_value(TrueHUD.SpecialBar, "True HUD integration", "TrueHUD special bar usage", ";true or false");
+	get_value(TrueHUD.SpecialBar, "True HUD integration", "Ignore Valhalla Combat", ";true or false");
+
+	(void)ini.SaveFile(a_path);
 }
 
 void Settings::LoadJSON(const wchar_t* a_path)
