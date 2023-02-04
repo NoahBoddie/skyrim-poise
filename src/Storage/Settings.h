@@ -27,7 +27,7 @@ public:
 		return &singleton;
 	}
 
-	float fDiffMultHPByPCVE;
+    float fDiffMultHPByPCVE;
 	float fDiffMultHPByPCE;
 	float fDiffMultHPByPCN;
 	float fDiffMultHPByPCH;

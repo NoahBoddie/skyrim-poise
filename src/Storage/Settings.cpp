@@ -8,38 +8,38 @@ float Settings::GetDamageMultiplier(RE::Actor* a_aggressor, RE::Actor* a_target)
 	if (a_aggressor && (a_aggressor->IsPlayerRef() || a_aggressor->IsPlayerTeammate())) {
 		switch (static_cast<RE::DIFFICULTY>(RE::PlayerCharacter::GetSingleton()->GetGameStatsData().difficulty)) {
 		case RE::DIFFICULTY::kNovice:
-			return fDiffMultHPByPCVE;
+			return 1.0f;
 		case RE::DIFFICULTY::kApprentice:
-			return fDiffMultHPByPCE;
+			return 1.0f;
 		case RE::DIFFICULTY::kAdept:
-			return fDiffMultHPByPCN;
+			return 1.0f;
 		case RE::DIFFICULTY::kExpert:
-			return fDiffMultHPByPCH;
+			return 1.0f;
 		case RE::DIFFICULTY::kMaster:
-			return fDiffMultHPByPCVH;
+			return 1.0f;
 		case RE::DIFFICULTY::kLegendary:
-			return fDiffMultHPByPCL;
+			return 1.0f;
 		}
 	} else if (a_target && (a_target->IsPlayerRef() || a_target->IsPlayerTeammate())) {
 		switch (static_cast<RE::DIFFICULTY>(RE::PlayerCharacter::GetSingleton()->GetGameStatsData().difficulty)) {
 		case RE::DIFFICULTY::kNovice:
-			return fDiffMultHPToPCVE;
+			return 1.0f;
 		case RE::DIFFICULTY::kApprentice:
-			return fDiffMultHPToPCE;
+			return 1.0f;
 		case RE::DIFFICULTY::kAdept:
-			return fDiffMultHPToPCN;
+			return 1.0f;
 		case RE::DIFFICULTY::kExpert:
-			return fDiffMultHPToPCH;
+			return 1.0f;
 		case RE::DIFFICULTY::kMaster:
-			return fDiffMultHPToPCVH;
+			return 1.0f;
 		case RE::DIFFICULTY::kLegendary:
-			return fDiffMultHPToPCL;
+			return 1.0f;
 		}
 	}
 	return 1.0f;
 }
 
-void Settings::LoadGameSettings()
+ void Settings::LoadGameSettings()
 {
 	auto gameSettingCollection = RE::GameSettingCollection::GetSingleton();
 	fDiffMultHPByPCVE = gameSettingCollection->GetSetting("fDiffMultHPByPCVE")->GetFloat();
