@@ -7,9 +7,16 @@ float ActiveEffectHandler::CalculateEffectMultiplier(RE::ActorValue a_actorValue
 {
 	auto        settings = Settings::GetSingleton();
 	std::string sEffectType = a_detrimental ? "Damage" : "Recovery";
-	std::string baseAVString = std::string(magic_enum::enum_name(a_actorValue).substr(1)).c_str();
-	auto        actorValue = settings->JSONSettings["Magic Effects"]["Actor Values"][sEffectType][baseAVString];
-	return actorValue != nullptr ? static_cast<float>(actorValue) : 0.0f;
+	std::string baseAVString = std::string(magic_enum::enum_name(a_actorValue));
+	if (baseAVString.size() != 0){
+		baseAVString = baseAVString.substr(1);
+		auto actorValue = settings->JSONSettings["Magic Effects"]["Actor Values"][sEffectType][baseAVString];
+		
+		if (actorValue != nullptr)
+			return static_cast<float>(actorValue);
+	}
+
+	return 0;
 }
 
 void ActiveEffectHandler::ProcessValueModifier(RE::Actor* a_target, RE::ActorValue a_actorValue, float a_magnitudeDelta, RE::Actor* a_aggressor)
